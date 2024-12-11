@@ -1,0 +1,39 @@
+<div class="audio-upload">
+    <!-- File input with validation for audio types -->
+    <input type="file" (change)="onFileSelected($event)" accept="audio/*">
+    
+    <!-- Show error message if any -->
+    <div *ngIf="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
+    
+    <!-- Display audio controls and loop options after selecting a valid file -->
+    <div *ngIf="audioFile">
+      <label for="duration">Select loop duration:</label>
+      <select [(ngModel)]="loopDuration" id="duration" [disabled]="!audioFile">
+        <option *ngFor="let duration of durations" [value]="duration">{{ duration }} minutes</option>
+      </select>
+      <button (click)="playLoop()" [disabled]="isLoading || isPlaying || !loopDuration">Play Looped Audio</button>
+      <button (click)="pauseLoop()" [disabled]="!isPlaying">Pause</button>
+      <button (click)="fastForward()" [disabled]="!isPlaying">Fast Forward</button>
+      <button (click)="downloadLoopedAudio()" [disabled]="!loopDuration">Download Looped Audio</button>
+
+    </div>
+    
+    <!-- Show the loading spinner if processing -->
+    <div *ngIf="isLoading" class="loading-spinner">
+      Loading...
+    </div>
+    
+    <!-- Audio player with controls for preview -->
+    <audio #audioPlayer controls *ngIf="audioFile" (timeupdate)="updateProgress()">
+      <source [src]="audioUrl" type="audio/mp3">
+    </audio>
+  
+    <!-- Progress Bar -->
+    <div *ngIf="isPlaying">
+      <progress [value]="audioProgress" max="100"></progress>
+      <span>{{ audioProgress | number: '1.0-0' }}%</span>
+    </div>
+  </div>
+  

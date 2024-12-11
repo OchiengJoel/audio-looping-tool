@@ -1,0 +1,26 @@
+/* Style for error message */
+.error-message {
+    color: red;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+  
+  /* Style for loading spinner */
+  .loading-spinner {
+    margin-top: 10px;
+    font-weight: bold;
+    color: #007BFF;
+  }
+  
+  /* Additional basic styling for the upload area */
+  .audio-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  button {
+    margin: 10px;
+  }
