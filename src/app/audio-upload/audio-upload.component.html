@@ -1,39 +1,52 @@
-<div class="audio-upload">
+<div class="app-container">
+  <!-- Toolbar -->
+  <header class="toolbar">
+    <div class="toolbar-title">Audio Upload and Looping</div>
+  </header>
+
+  <!-- Main content container -->
+  <div class="audio-upload">
     <!-- File input with validation for audio types -->
-    <input type="file" (change)="onFileSelected($event)" accept="audio/*">
-    
+    <div class="upload-container">
+      <label for="file-input" class="upload-label">Upload Audio File</label>
+      <input id="file-input" type="file" (change)="onFileSelected($event)" accept="audio/*" class="file-input">
+    </div>
+
     <!-- Show error message if any -->
     <div *ngIf="errorMessage" class="error-message">
       {{ errorMessage }}
     </div>
-    
+
     <!-- Display audio controls and loop options after selecting a valid file -->
-    <div *ngIf="audioFile">
-      <label for="duration">Select loop duration:</label>
-      <select [(ngModel)]="loopDuration" id="duration" [disabled]="!audioFile">
+    <div *ngIf="audioFile" class="controls-container">
+      <label for="duration" class="duration-label">Select Loop Duration:</label>
+      <select [(ngModel)]="loopDuration" id="duration" class="duration-select" [disabled]="!audioFile">
         <option *ngFor="let duration of durations" [value]="duration">{{ duration }} minutes</option>
       </select>
-      <button (click)="playLoop()" [disabled]="isLoading || isPlaying || !loopDuration">Play Looped Audio</button>
-      <button (click)="pauseLoop()" [disabled]="!isPlaying">Pause</button>
-      <button (click)="fastForward()" [disabled]="!isPlaying">Fast Forward</button>
-      <button (click)="downloadLoopedAudio()" [disabled]="!loopDuration">Download Looped Audio</button>
 
+      <div class="button-group">
+        <button (click)="playLoop()" [disabled]="isPlaying || !loopDuration" class="action-btn">Play Looped Audio</button>
+        <button (click)="pauseLoop()" [disabled]="!isPlaying" class="action-btn">Pause</button>
+        <button (click)="fastForward()" [disabled]="!isPlaying" class="action-btn">Fast Forward</button>
+        <button (click)="downloadLoopedAudio()" [disabled]="!loopDuration" class="action-btn">Download Looped Audio</button>
+        <button (click)="reset()" [disabled]="!loopDuration" class="reset-btn">Reset</button>
+      </div>
     </div>
-    
+
     <!-- Show the loading spinner if processing -->
     <div *ngIf="isLoading" class="loading-spinner">
-      Loading...
+      <span>Loading...</span>
     </div>
-    
+
     <!-- Audio player with controls for preview -->
-    <audio #audioPlayer controls *ngIf="audioFile" (timeupdate)="updateProgress()">
+    <audio #audioPlayer controls *ngIf="audioFile" (timeupdate)="updateProgress()" class="audio-player">
       <source [src]="audioUrl" type="audio/mp3">
     </audio>
-  
+
     <!-- Progress Bar -->
-    <div *ngIf="isPlaying">
-      <progress [value]="audioProgress" max="100"></progress>
-      <span>{{ audioProgress | number: '1.0-0' }}%</span>
+    <div *ngIf="isPlaying" class="progress-container">
+      <progress [value]="audioProgress" max="100" class="progress-bar"></progress>
+      <span class="progress-percentage">{{ audioProgress | number: '1.0-0' }}%</span>
     </div>
   </div>
-  
+</div>

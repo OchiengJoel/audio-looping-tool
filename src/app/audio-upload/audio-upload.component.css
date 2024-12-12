@@ -1,26 +1,184 @@
-/* Style for error message */
+/* General styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f9f9f9;
+  color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* Ensure full height */
+  flex-direction: column;
+}
+
+/* App container to hold everything */
+.app-container {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+/* Toolbar styles */
+.toolbar {
+  width: 100%;
+  background-color: #007BFF;
+  color: white;
+  padding: 16px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  border-radius: 8px 8px 0 0;
+}
+
+/* Main upload section container */
+.audio-upload {
+  width: 100%;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* File input styling */
+.upload-container {
+  margin-bottom: 20px;
+}
+
+.upload-label {
+  font-size: 16px;
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.file-input {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 100%;
+  max-width: 500px;
+  font-size: 14px;
+}
+
+/* Error message styling */
 .error-message {
-    color: red;
-    font-weight: bold;
-    margin-top: 10px;
-  }
-  
-  /* Style for loading spinner */
-  .loading-spinner {
-    margin-top: 10px;
-    font-weight: bold;
-    color: #007BFF;
-  }
-  
-  /* Additional basic styling for the upload area */
-  .audio-upload {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin-top: 20px;
-  }
-  
-  button {
-    margin: 10px;
-  }
+  color: #e57373;
+  font-weight: bold;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+/* Controls container */
+.controls-container {
+  margin-top: 20px;
+}
+
+/* Duration select styling */
+.duration-label {
+  font-size: 16px;
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.duration-select {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 100%;
+  max-width: 200px;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+/* Button group styling */
+.button-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.action-btn, .reset-btn {
+  padding: 12px 25px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  border: none;
+  width: 100%;
+  max-width: 300px;
+}
+
+.action-btn {
+  background-color: #007BFF;
+  color: white;
+}
+
+.action-btn:hover {
+  background-color: #0056b3;
+}
+
+.action-btn:disabled {
+  background-color: #c0c0c0;
+  cursor: not-allowed;
+}
+
+.reset-btn {
+  background-color: #f44336;
+  color: white;
+}
+
+.reset-btn:hover {
+  background-color: #d32f2f;
+}
+
+.reset-btn:disabled {
+  background-color: #e57373;
+  cursor: not-allowed;
+}
+
+/* Loading spinner */
+.loading-spinner {
+  font-weight: bold;
+  color: #007BFF;
+  margin-top: 20px;
+}
+
+/* Audio player */
+.audio-player {
+  width: 100%;
+  margin-top: 20px;
+}
+
+/* Progress bar container */
+.progress-container {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  margin-bottom: 8px;
+}
+
+.progress-percentage {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+}

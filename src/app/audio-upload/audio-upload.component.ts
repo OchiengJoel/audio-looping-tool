@@ -38,29 +38,45 @@ export class AudioUploadComponent {
     }
   }
 
-  // Helper function to handle the audio file loading and playback
-private async loadAndDecodeAudioFile(): Promise<AudioBuffer | null> {
-  if (!this.audioFile) {
-    this.errorMessage = 'No file selected!';
-    return null;  // Return null if no file is selected
+  // Reset all states to their initial values
+  reset(): void {
+    this.audioFile = null;
+    this.audioUrl = null;
+    this.loopDuration = null;
+    this.isLoading = false;
+    this.isPlaying = false;
+    this.audioProgress = 0;
+    this.errorMessage = null;
+    this.startTime = 0;
+    if (this.audioSourceNode) {
+      this.audioSourceNode.stop();
+      this.audioSourceNode = null;
+    }
   }
-  
-  const reader = new FileReader();
-  return new Promise((resolve, reject) => {
-    reader.onloadend = async () => {
-      try {
-        const audioData = reader.result as ArrayBuffer;
-        const buffer = await this.audioContext.decodeAudioData(audioData);
-        resolve(buffer);
-      } catch (error) {
-        reject('Error decoding the audio file. Please try again.');
-      }
-    };
 
-    reader.onerror = () => reject('Error reading the audio file. Please try again.');
-    reader.readAsArrayBuffer(this.audioFile!);  // Non-null assertion (force TypeScript to treat this as not null)
-  });
-}
+  // Helper function to handle the audio file loading and playback
+  private async loadAndDecodeAudioFile(): Promise<AudioBuffer | null> {
+    if (!this.audioFile) {
+      this.errorMessage = 'No file selected!';
+      return null;  // Return null if no file is selected
+    }
+    
+    const reader = new FileReader();
+    return new Promise((resolve, reject) => {
+      reader.onloadend = async () => {
+        try {
+          const audioData = reader.result as ArrayBuffer;
+          const buffer = await this.audioContext.decodeAudioData(audioData);
+          resolve(buffer);
+        } catch (error) {
+          reject('Error decoding the audio file. Please try again.');
+        }
+      };
+
+      reader.onerror = () => reject('Error reading the audio file. Please try again.');
+      reader.readAsArrayBuffer(this.audioFile!);  // Non-null assertion (force TypeScript to treat this as not null)
+    });
+  }
 
   // Update the progress to account for looping
   updateProgress(): void {
