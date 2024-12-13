@@ -1,52 +1,115 @@
-<div class="app-container">
-  <!-- Toolbar -->
-  <header class="toolbar">
-    <div class="toolbar-title">Audio Upload and Looping</div>
-  </header>
+<div class="container">
+  <!-- Angular Toolbar for Navigation -->
+  <mat-toolbar color="primary">
+    <mat-toolbar-row>
+      <span class="toolbar-title">Audio Loop</span>
+      <span class="example-spacer"></span>
+      <button mat-button (click)="scrollTo('overview')" aria-label="Go to Overview">Overview</button>
+      <button mat-button (click)="scrollTo('how-to-use')" aria-label="Go to How to Use">How to Use</button>
+      <button mat-button (click)="scrollTo('what-are-loops')" aria-label="What Are Music Loops?">What Are Music
+        Loops?</button>
+      <button mat-button (click)="scrollTo('why-use-loops')" aria-label="Why Use Audio Loops?">Why Use Audio
+        Loops?</button>
+      <button mat-button (click)="scrollTo('how-it-works')" aria-label="How It Works">How It Works</button>
+      <button mat-button (click)="scrollTo('does-it-modify')" aria-label="Does It Modify the Original File?">Does It
+        Modify?</button>
+    </mat-toolbar-row>
+  </mat-toolbar>
 
-  <!-- Main content container -->
-  <div class="audio-upload">
-    <!-- File input with validation for audio types -->
-    <div class="upload-container">
-      <label for="file-input" class="upload-label">Upload Audio File</label>
-      <input id="file-input" type="file" (change)="onFileSelected($event)" accept="audio/*" class="file-input">
+  <div class="container2">
+
+    <!-- Content Sections with Auto-Scroll -->
+    <div class="content">
+      <section id="overview">
+        <h2>Welcome to Audio Loop</h2>
+        <p>
+          Audio Loop is a powerful online tool that lets you loop audio files directly in your browser—no downloads or
+          registration required. Ideal for music projects, soundscapes, and experiments.
+        </p>
+        <p>
+          Designed for musicians, producers, and sound designers, Audio Loop lets you easily create custom loops of any
+          audio, whether it's a short snippet or an entire track.
+        </p>
+      </section>
+
+      <section id="audio-upload">
+        <h2>Upload Your Audio and Loop It</h2>
+        <input type="file" (change)="onFileSelected($event)" accept="audio/*" aria-label="Upload Audio File">
+        <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+        <div *ngIf="audioFile">
+          <!-- <label for="duration">Select Loop Duration:</label>
+          <select [(ngModel)]="loopDuration" id="duration" [disabled]="!audioFile" aria-label="Select loop duration">
+            <option *ngFor="let duration of durations" [value]="duration">{{ duration }} minutes</option>
+          </select> -->
+
+          <mat-form-field appearance="fill">
+            <mat-label>Select Loop Duration:</mat-label>
+            <mat-select [(ngModel)]="loopDuration" [disabled]="!audioFile" aria-label="Select loop duration">
+              <mat-option *ngFor="let duration of durations" [value]="duration">
+                {{ duration }} minutes
+              </mat-option>
+            </mat-select>    
+
+          </mat-form-field>
+
+          <!-- Display the Selected Loop Duration -->
+          <div *ngIf="loopDuration">
+            <p>You have selected a loop duration of: {{ loopDuration }} minutes</p>
+          </div>
+          
+          <div class="button-group">
+            <button (click)="playLoop()" [disabled]="isLoading || isPlaying || !loopDuration">Play Looped Audio</button>
+            <button (click)="pauseLoop()" [disabled]="!isPlaying">Pause</button>
+            <button (click)="fastForward()" [disabled]="!isPlaying">Fast Forward</button>
+            <button (click)="downloadLoopedAudio()" [disabled]="!loopDuration">Download Looped Audio</button>
+            <button (click)="reset()" [disabled]="!loopDuration" class="reset-btn">Reset</button>
+          </div>
+        </div>
+        <div *ngIf="isLoading" class="loading-spinner">Loading...</div>
+        <audio #audioPlayer controls *ngIf="audioFile" (timeupdate)="updateProgress()">
+          <source [src]="audioUrl" type="audio/mp3">
+        </audio>
+        <div *ngIf="isPlaying" class="progress-bar">
+          <progress [value]="audioProgress" max="100"></progress>
+          <span>{{ audioProgress | number: '1.0-0' }}%</span>
+        </div>
+      </section>
+
+      <section id="how-to-use">
+        <h2>How to Use Audio Loop</h2>
+        <ol>
+          <li><strong>Upload Your Audio</strong> - Select your audio file by clicking or dragging it into the upload
+            area.</li>
+          <li><strong>Reset the File</strong> - Click "Reset" to clear the current file and start over.</li>
+          <li><strong>Choose Your Loop Duration</strong> - Select how long you want the loop to play (in minutes).</li>
+          <li><strong>Play and Preview</strong> - Click "Play Looped Audio" to preview the loop.</li>
+          <li><strong>Download the Final Audio</strong> - Click "Download" to save the looped audio to your device.</li>
+        </ol>
+      </section>
+
+      <section id="what-are-loops">
+        <h2>What Are Music Loops?</h2>
+        <p>A music loop is a short segment of audio that repeats seamlessly to create a longer track. Loops are commonly
+          used in music production to build rhythm or extend compositions.</p>
+      </section>
+
+      <section id="why-use-loops">
+        <h2>Why Use Audio Loops?</h2>
+        <p>Loops offer creative possibilities in music production, sound design, and video editing. They allow musicians
+          and producers to create complex compositions or remix existing tracks with ease.</p>
+      </section>
+
+      <section id="how-it-works">
+        <h2>How Does Audio Loop Work?</h2>
+        <p>After uploading your audio, you choose a loop duration. The tool will repeat your audio to match the selected
+          duration, without altering the original file.</p>
+      </section>
+
+      <section id="does-it-modify">
+        <h2>Does Audio Loop Modify the Original File?</h2>
+        <p>No, Audio Loop only creates a new file by looping the audio without modifying the original.</p>
+      </section>
     </div>
 
-    <!-- Show error message if any -->
-    <div *ngIf="errorMessage" class="error-message">
-      {{ errorMessage }}
-    </div>
-
-    <!-- Display audio controls and loop options after selecting a valid file -->
-    <div *ngIf="audioFile" class="controls-container">
-      <label for="duration" class="duration-label">Select Loop Duration:</label>
-      <select [(ngModel)]="loopDuration" id="duration" class="duration-select" [disabled]="!audioFile">
-        <option *ngFor="let duration of durations" [value]="duration">{{ duration }} minutes</option>
-      </select>
-
-      <div class="button-group">
-        <button (click)="playLoop()" [disabled]="isPlaying || !loopDuration" class="action-btn">Play Looped Audio</button>
-        <button (click)="pauseLoop()" [disabled]="!isPlaying" class="action-btn">Pause</button>
-        <button (click)="fastForward()" [disabled]="!isPlaying" class="action-btn">Fast Forward</button>
-        <button (click)="downloadLoopedAudio()" [disabled]="!loopDuration" class="action-btn">Download Looped Audio</button>
-        <button (click)="reset()" [disabled]="!loopDuration" class="reset-btn">Reset</button>
-      </div>
-    </div>
-
-    <!-- Show the loading spinner if processing -->
-    <div *ngIf="isLoading" class="loading-spinner">
-      <span>Loading...</span>
-    </div>
-
-    <!-- Audio player with controls for preview -->
-    <audio #audioPlayer controls *ngIf="audioFile" (timeupdate)="updateProgress()" class="audio-player">
-      <source [src]="audioUrl" type="audio/mp3">
-    </audio>
-
-    <!-- Progress Bar -->
-    <div *ngIf="isPlaying" class="progress-container">
-      <progress [value]="audioProgress" max="100" class="progress-bar"></progress>
-      <span class="progress-percentage">{{ audioProgress | number: '1.0-0' }}%</span>
-    </div>
   </div>
 </div>

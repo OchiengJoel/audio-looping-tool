@@ -21,6 +21,13 @@ export class AudioUploadComponent {
   private audioSourceNode: AudioBufferSourceNode | null = null;
   private startTime: number = 0;
 
+  scrollTo(sectionId: string): void {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
   // On file selected, validate and set the file
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;

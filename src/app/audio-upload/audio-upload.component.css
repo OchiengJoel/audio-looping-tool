@@ -1,184 +1,150 @@
-/* General styles */
+/* Global Styles */
 * {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f9f9f9;
+  font-family: 'Roboto', sans-serif;
+  background-color: #f4f4f9;
   color: #333;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh; /* Ensure full height */
-  flex-direction: column;
+  padding-top: 60px; /* Offset for the fixed toolbar */
 }
 
-/* App container to hold everything */
-.app-container {
-  width: 100%;
-  max-width: 800px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
+.container {
+  /* max-width: 1200px; */
+  /* margin: 0 auto; */
+  /* padding-bottom: 20px; */
+  margin-bottom: 200px;
+}
+.container2 {
+  max-width: 1400px;
+  margin: 4% auto;
+  /* padding: 20px; */
 }
 
-/* Toolbar styles */
-.toolbar {
-  width: 100%;
-  background-color: #007BFF;
+/* Toolbar Styling */
+mat-toolbar {
+  background-color: #00796b;
   color: white;
-  padding: 16px;
-  text-align: center;
-  font-size: 24px;
   font-weight: bold;
-  border-radius: 8px 8px 0 0;
-}
-
-/* Main upload section container */
-.audio-upload {
+  position: fixed;
   width: 100%;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-/* File input styling */
-.upload-container {
-  margin-bottom: 20px;
-}
-
-.upload-label {
-  font-size: 16px;
-  color: #333;
-  font-weight: 600;
-  margin-bottom: 8px;
-  display: block;
-}
-
-.file-input {
+  top: 0;
+  z-index: 100;
   padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  width: 100%;
-  max-width: 500px;
-  font-size: 14px;
 }
 
-/* Error message styling */
-.error-message {
-  color: #e57373;
-  font-weight: bold;
-  margin-top: 10px;
-  font-size: 14px;
+.toolbar-title {
+  font-size: 1.5rem;
 }
 
-/* Controls container */
-.controls-container {
-  margin-top: 20px;
+.example-spacer {
+  flex: 1;
 }
 
-/* Duration select styling */
-.duration-label {
-  font-size: 16px;
-  color: #333;
-  font-weight: 600;
-  margin-bottom: 8px;
-  display: block;
-}
-
-.duration-select {
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  width: 100%;
-  max-width: 200px;
-  font-size: 14px;
-  margin-bottom: 20px;
-}
-
-/* Button group styling */
-.button-group {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-}
-
-.action-btn, .reset-btn {
-  padding: 12px 25px;
-  font-size: 16px;
-  cursor: pointer;
-  border-radius: 4px;
-  border: none;
-  width: 100%;
-  max-width: 300px;
-}
-
-.action-btn {
-  background-color: #007BFF;
+button.mat-button {
   color: white;
 }
 
-.action-btn:hover {
-  background-color: #0056b3;
+button.mat-button:hover {
+  background-color: #004d40;
 }
 
-.action-btn:disabled {
-  background-color: #c0c0c0;
+/* Content Section Styling */
+.content {
+  padding: 40px 20px;
+}
+
+section {
+  margin-bottom: 60px;
+}
+
+h2 {
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+p, ol {
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* File Input & Buttons */
+input[type="file"] {
+  margin-bottom: 15px;
+}
+
+button {
+  margin: 8px;
+  padding: 8px 15px;
+  background-color: #7559f1;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #004d40;
+}
+
+button:disabled {
+  background-color: #bdbdbd;
   cursor: not-allowed;
 }
 
 .reset-btn {
   background-color: #f44336;
-  color: white;
 }
 
 .reset-btn:hover {
   background-color: #d32f2f;
 }
 
-.reset-btn:disabled {
-  background-color: #e57373;
-  cursor: not-allowed;
+/* Error Message Styling */
+.error-message {
+  color: red;
+  font-weight: bold;
+  margin-top: 10px;
 }
 
-/* Loading spinner */
+/* Loading Spinner */
 .loading-spinner {
+  margin-top: 10px;
   font-weight: bold;
   color: #007BFF;
-  margin-top: 20px;
 }
 
-/* Audio player */
-.audio-player {
+/* Progress Bar */
+progress {
   width: 100%;
-  margin-top: 20px;
+  height: 20px;
+  margin-top: 10px;
+  appearance: none;
 }
 
-/* Progress bar container */
-.progress-container {
-  margin-top: 10px;
-  text-align: center;
+progress::-webkit-progress-bar {
+  background-color: #e0e0e0;
+  border-radius: 5px;
+}
+
+progress::-webkit-progress-value {
+  background-color: #00796b;
+  border-radius: 5px;
 }
 
 .progress-bar {
-  width: 100%;
-  height: 8px;
-  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.progress-percentage {
-  font-size: 14px;
-  font-weight: bold;
-  color: #333;
+.button-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
 }
