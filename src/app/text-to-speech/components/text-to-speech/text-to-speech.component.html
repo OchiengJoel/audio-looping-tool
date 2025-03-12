@@ -1,0 +1,53 @@
+<div class="container">
+  <h1>Text to Speech Converter</h1>
+  
+  <!-- Text Input -->
+  <div class="input-section">
+    <textarea 
+      [(ngModel)]="textInput"
+      placeholder="Enter text to convert to speech"
+      rows="5"
+      cols="50"></textarea>
+  </div>
+
+  <!-- Voice Selection -->
+  <div class="voice-selection">
+    <label>Choose Voice:</label>
+    <select [(ngModel)]="selectedVoiceGender">
+      <option value="male">Male</option>
+      <option value="female">Female</option>
+    </select>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <button 
+      [disabled]="!textInput || isConverting" 
+      (click)="convertToSpeech()">
+      Convert to Speech
+    </button>
+    
+    <button 
+      [disabled]="!audioUrl || isConverting" 
+      (click)="playSpeech()">
+      Play Speech
+    </button>
+    
+    <button 
+      [disabled]="!audioUrl || isConverting" 
+      (click)="downloadAudio()">
+      Download MP3
+    </button>
+  </div>
+
+  <!-- Progress Indicator -->
+  <div class="progress" *ngIf="isConverting">
+    <p>Converting... {{ conversionProgress }}%</p>
+    <progress [value]="conversionProgress" max="100"></progress>
+  </div>
+
+  <!-- Audio Preview -->
+  <div *ngIf="audioUrl && !isConverting" class="audio-preview">
+    <audio controls [src]="audioUrl"></audio>
+  </div>
+</div>
