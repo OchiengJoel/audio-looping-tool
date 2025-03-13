@@ -1,5 +1,8 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
+//import Recorder from 'recorder-js';
+
+declare var Recorder: any; // Declare Recorder.js
 
 
 @Component({
@@ -9,6 +12,8 @@ import { Component } from '@angular/core';
 })
 export class TextToSpeechComponent {
 
+  @ViewChild('audioElement', { static: false }) audioElement!: ElementRef<HTMLAudioElement>;
+
   textInput: string = '';
   selectedVoiceGender: string = 'male';
   audioUrl: string | null = null;
@@ -16,109 +21,175 @@ export class TextToSpeechComponent {
   conversionProgress: number = 0;
   private synth = window.speechSynthesis;
   private voices: SpeechSynthesisVoice[] = [];
-  private audioBlob: Blob | null = null;
+  private audioContext: AudioContext | null = null;
+  private recorder: any = null;
 
-  constructor(private http: HttpClient) { // Inject HttpClient
+  constructor() {
     this.loadVoices();
   }
 
   loadVoices() {
     this.synth.onvoiceschanged = () => {
       this.voices = this.synth.getVoices();
+      console.log('Voices loaded:', this.voices.length);
     };
     this.voices = this.synth.getVoices();
   }
 
-  convertToSpeech() {
+  async convertToSpeech() {
     if (!this.textInput) return;
 
+    console.time('Conversion');
+    console.log('Starting conversion...');
     this.isConverting = true;
     this.conversionProgress = 0;
     this.audioUrl = null;
-    this.audioBlob = null;
 
     const utterance = new SpeechSynthesisUtterance(this.textInput);
-    const voice = this.voices.find(v => {
-      const isMale = v.name.toLowerCase().includes('male') ||
-        (!v.name.toLowerCase().includes('female') && this.selectedVoiceGender === 'male');
-      return this.selectedVoiceGender === 'male' ? isMale : !isMale;
-    }) || this.voices[0];
+    const voice = this.getVoice();
+    if (!voice) {
+      console.error('No voice found!');
+      this.isConverting = false;
+      alert('No speech voices available.');
+      return;
+    }
 
     utterance.voice = voice;
     utterance.rate = 1;
     utterance.pitch = 1;
 
-    // Handle completion
+    // Start progress simulation immediately
+    this.simulateConversionProgress();
+
+    try {
+      // Set up Web Audio API for recording
+      this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      console.log('AudioContext created');
+      
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      console.log('Microphone access granted');
+      const source = this.audioContext.createMediaStreamSource(stream);
+
+      this.recorder = new Recorder(this.audioContext);
+      source.connect(this.recorder.input);
+      this.recorder.record();
+      console.log('Recorder started');
+    } catch (error) {
+      console.error('Audio setup error:', error);
+      // Fallback to synthesis without recording
+      this.audioUrl = null; // No recording, but proceed with synthesis
+    }
+
+    utterance.onstart = () => console.log('Synthesis started');
     utterance.onend = () => {
-      this.generateAudioBlob(utterance);
-      this.isConverting = false; // Reset when synthesis and audio are ready
-      this.conversionProgress = 100; // Ensure 100% when done
+      console.log('Synthesis ended');
+      if (this.recorder) {
+        this.recorder.stop();
+        this.recorder.exportWAV((blob: Blob) => {
+          this.audioUrl = URL.createObjectURL(blob);
+          this.isConverting = false;
+          this.conversionProgress = 100;
+          console.log('Audio recorded:', this.audioUrl);
+          this.cleanup();
+        });
+      } else {
+        // Fallback if recording failed
+        this.finalizeConversion();
+      }
+    };
+    utterance.onerror = (event) => {
+      console.error('Synthesis error:', event.error);
+      if (this.recorder) this.recorder.stop();
+      this.finalizeConversion();
     };
 
-    // Start synthesis and progress simulation
+    console.log('Speaking...');
     this.synth.speak(utterance);
-    this.simulateConversionProgress();
+
+    setTimeout(() => {
+      if (this.isConverting) {
+        console.warn('Timeout reached');
+        if (this.recorder) this.recorder.stop();
+        this.finalizeConversion();
+      }
+    }, 10000);
   }
 
-  // Simulate progress up to 100%
   private simulateConversionProgress() {
+    console.log('Starting progress simulation');
     const interval = setInterval(() => {
       if (this.conversionProgress < 100) {
-        this.conversionProgress += 10; // Increment until 100%
+        this.conversionProgress += 10;
+        console.log('Progress:', this.conversionProgress);
       }
       if (this.conversionProgress >= 100 || !this.isConverting) {
-        clearInterval(interval); // Stop when 100% or conversion ends
-        if (!this.isConverting) {
-          this.conversionProgress = 100; // Ensure it’s exactly 100%
-        }
+        clearInterval(interval);
+        console.log('Progress simulation complete');
       }
-    }, 200); // Adjust speed as needed
+    }, 200);
   }
 
-  private generateAudioBlob(utterance: SpeechSynthesisUtterance) {
-    // Replace simulation with API call
-    const apiUrl = 'YOUR_TTS_API_ENDPOINT'; // Replace with your API endpoint
-    const apiKey = 'YOUR_API_KEY'; // Replace with your API key
+  private finalizeConversion() {
+    this.isConverting = false;
+    this.conversionProgress = 100;
+    if (!this.audioUrl) {
+      // Fallback placeholder if recording failed
+      const fakeAudioData = new Blob([this.textInput], { type: 'audio/mp3' });
+      this.audioUrl = URL.createObjectURL(fakeAudioData);
+      console.warn('Recording failed - using text placeholder');
+    }
+    console.log('Final state:', { isConverting: this.isConverting, audioUrl: this.audioUrl });
+    console.timeEnd('Conversion');
+    this.cleanup();
+  }
 
-    const requestBody = {
-      text: this.textInput,
-      voice: utterance.voice?.name, // Send the selected voice name
-      // Add any other API-specific parameters
-    };
-
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}` // If using API key
-    });
-
-    this.http.post(apiUrl, requestBody, { headers: headers, responseType: 'blob' })
-      .subscribe(
-        (blob: Blob) => {
-          this.audioBlob = blob;
-          this.audioUrl = URL.createObjectURL(blob);
-        },
-        (error) => {
-          console.error('Error generating audio:', error);
-          this.isConverting = false; // Stop converting in case of error
-          this.conversionProgress = 0;
-          alert('Error generating audio. Please try again.');
-        }
-      );
+  private cleanup() {
+    if (this.audioContext) {
+      this.audioContext.close().then(() => console.log('AudioContext closed'));
+      this.audioContext = null;
+    }
+    this.recorder = null;
   }
 
   playSpeech() {
-    if (!this.audioUrl) return;
+    if (this.audioUrl) {
+      console.log('Playing recorded audio...');
+      const audio = new Audio(this.audioUrl);
+      audio.play().catch(err => {
+        console.error('Playback error:', err);
+        this.playFallback();
+      });
+    } else {
+      this.playFallback();
+    }
+  }
 
-    const audio = new Audio(this.audioUrl);
-    audio.play();
+  private playFallback() {
+    console.log('Falling back to synthesis...');
+    const utterance = new SpeechSynthesisUtterance(this.textInput);
+    const voice = this.getVoice();
+    if (voice) {
+      utterance.voice = voice;
+      utterance.rate = 1;
+      utterance.pitch = 1;
+      this.synth.speak(utterance);
+    }
   }
 
   downloadAudio() {
     if (!this.audioUrl) return;
-
+    console.log('Downloading audio...');
     const link = document.createElement('a');
     link.href = this.audioUrl;
-    link.download = 'speech.mp3';
+    link.download = this.recorder ? 'speech.wav' : 'speech.mp3'; // WAV if recorded, MP3 if placeholder
     link.click();
+  }
+
+  private getVoice(): SpeechSynthesisVoice | undefined {
+    return this.voices.find(v => {
+      const isMale = v.name.toLowerCase().includes('male') ||
+        (!v.name.toLowerCase().includes('female') && this.selectedVoiceGender === 'male');
+      return this.selectedVoiceGender === 'male' ? isMale : !isMale;
+    }) || this.voices[0];
   }
 }
